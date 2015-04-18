@@ -107,8 +107,8 @@ public interface Subscriber<T> {
 }
 ````
 
-| ID                        | Rule                                                                                                   |
-| ------------------------- | ------------------------------------------------------------------------------------------------------ |
+| ID                        | Rule                                                                                                   | Notes |
+| ------------------------- | ------------------------------------------------------------------------------------------------------ | ----- |
 | <a name="2.1">1</a>       | A `Subscriber` MUST signal demand via `Subscription.request(long n)` to receive `onNext` signals. |
 | <a name="2.2">2</a>       | If a `Subscriber` suspects that its processing of signals will negatively impact its `Publisher`'s responsivity, it is RECOMMENDED that it asynchronously dispatches its signals. |
 | <a name="2.3">3</a>       | `Subscriber.onComplete()` and `Subscriber.onError(Throwable t)` MUST NOT call any methods on the `Subscription` or the `Publisher`. |
@@ -117,7 +117,7 @@ public interface Subscriber<T> {
 | <a name="2.6">6</a>       | A `Subscriber` MUST call `Subscription.cancel()` if it is no longer valid to the `Publisher` without the `Publisher` having signaled `onError` or `onComplete`. |
 | <a name="2.7">7</a>       | A `Subscriber` MUST ensure that all calls on its `Subscription` take place from the same thread or provide for respective external synchronization. |
 | <a name="2.8">8</a>       | A `Subscriber` MUST be prepared to receive one or more `onNext` signals after having called `Subscription.cancel()` if there are still requested elements pending [see [3.12](#3.12)]. `Subscription.cancel()` does not guarantee to perform the underlying cleaning operations immediately. |
-| <a name="2.9">9</a>       | A `Subscriber` MUST be prepared to receive an `onComplete` signal with or without a preceding `Subscription.request(long n)` call. |
+| <a name="2.9">9</a>       | A `Subscriber` MUST be prepared to receive an `onComplete` signal with or without a preceding `Subscription.request(long n)` call. | It is intended that a `Publisher` propagates `onComplete` and `onError` signals as soon as they are known |
 | <a name="2.10">10</a>     | A `Subscriber` MUST be prepared to receive an `onError` signal with or without a preceding `Subscription.request(long n)` call. |
 | <a name="2.11">11</a>     | A `Subscriber` MUST make sure that all calls on its `onXXX` methods happen-before [[1]](#footnote-2-1) the processing of the respective signals. I.e. the Subscriber must take care of properly publishing the signal to its processing logic. |
 | <a name="2.12">12</a>     | `Subscriber.onSubscribe` MUST be called at most once for a given `Subscriber` (based on object equality). |
@@ -134,8 +134,8 @@ public interface Subscription {
 }
 ````
 
-| ID                        | Rule                                                                                                   |
-| ------------------------- | ------------------------------------------------------------------------------------------------------ |
+| ID                        | Rule                                                                                                   | Notes |
+| ------------------------- | ------------------------------------------------------------------------------------------------------ | ----- |
 | <a name="3.1">1</a>       | `Subscription.request` and `Subscription.cancel` MUST only be called inside of its `Subscriber` context. A `Subscription` represents the unique relationship between a `Subscriber` and a `Publisher` [see [2.12](#2.12)]. |
 | <a name="3.2">2</a>       | The `Subscription` MUST allow the `Subscriber` to call `Subscription.request` synchronously from within `onNext` or `onSubscribe`. |
 | <a name="3.3">3</a>       | `Subscription.request` MUST place an upper bound on possible synchronous recursion between `Publisher` and `Subscriber`[[1](#footnote-3-1)]. |
